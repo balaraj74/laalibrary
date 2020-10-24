@@ -106,13 +106,19 @@ int Matrix::isIdentity() { //pr for isIdentity
            if(m1.m[i][i] == 1)
             flag ++;;
        }
-       if(flag == m1.r);
+       if(flag == m1.r)
        return 1;
        else
         return 0;
 }
 
-
+int Matrix::trace() {
+    Matrix m1(r,c);
+    int sum=0;
+    for(int i=0;i<r;i++)
+        sum  = sum + m1.m[i][i];
+    return sum;
+}
 
 int *Matrix::gaussElimination()
 {
