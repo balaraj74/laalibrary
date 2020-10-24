@@ -276,7 +276,7 @@ int Matrix::isInvolutory(){
 				    break;
 			    }
 		    }
-		    elseif(result.m[i][j]==0)
+		    else if(result.m[i][j]==0)
 		            continue;
 	            else{
 			    f = 1;
