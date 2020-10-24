@@ -128,6 +128,15 @@ int Matrix::isSquare() {
         return 0;
 }
 
+int *Matrix::dimensions() {
+    Matrix m1(r,c);
+    int arr[2];
+    arr[0]=r;
+    arr[1]=c;
+    return arr;
+
+}
+
 int *Matrix::gaussElimination()
 {
 	int x_arr[100];
