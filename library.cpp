@@ -1,5 +1,5 @@
 #include <iostream>
-
+#include<math.h>
 using namespace std;
 
 class Matrix
@@ -25,6 +25,7 @@ class Matrix
 		int trace(); //Find the trace of a given matrix
 		int *dimensions(); //Find the dimensions of a matrix
 		int *gaussElimination();
+		double determinant(int , double [10][10]);
 		Matrix columnSpace();
 		Matrix transpose();
 		Matrix nullSpace();
@@ -189,6 +190,40 @@ Matrix Matrix::transpose()
 		for(int j=0;j<c;j++)
 			out.m[j][i]=m[i][j];
 	return out;
+}
+
+double Matrix::determinant(int n,double mat[10][10])
+{
+    int k, subi, i, j, subj;
+    double d=0;
+    double submat[10][10];
+    if (n == 2)
+    {
+        return( (mat[0][0] * mat[1][1]) - (mat[1][0] * mat[0][1]));
+    }
+    else
+    {
+        for(k = 0; k < n; k++)
+        {
+            subi = 0;
+            for(i = 1; i < n; i++)
+            {
+                subj = 0;
+                for(j = 0; j < n; j++)
+                {
+                    if (j == k)
+                    {
+                        continue;
+                    }
+                    submat[subi][subj] = mat[i][j];
+                    subj++;
+                }
+                subi++;
+            }
+        d = d + (pow(-1 ,c) * mat[0][c] * determinant(r - 1 ,submat));
+        }
+    }
+    return d;
 }
 
 int main()
