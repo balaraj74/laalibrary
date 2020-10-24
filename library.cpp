@@ -25,7 +25,7 @@ class Matrix
 		int trace(); //Find the trace of a given matrix
 		int *dimensions(); //Find the dimensions of a matrix
 		int *gaussElimination();
-		double determinant(int , float [10][10]);
+		double determinant(int , double [10][10]);
 		Matrix columnSpace();
 		Matrix transpose();
 		Matrix nullSpace();
@@ -192,11 +192,11 @@ Matrix Matrix::transpose()
 	return out;
 }
 
-double Matrix::determinant(int n,float mat[10][10])
+double Matrix::determinant(int n,double mat[10][10])
 {
     int k, subi, i, j, subj;
-    float d=0;
-    float submat[10][10];
+    double d=0;
+    double submat[10][10];
     if (n == 2)
     {
         return( (mat[0][0] * mat[1][1]) - (mat[1][0] * mat[0][1]));
@@ -226,6 +226,84 @@ double Matrix::determinant(int n,float mat[10][10])
     return d;
 }
 
+int Matrix::isIdempotent(){
+	Matrix mat(r,c);
+	Matrix result(r,c);
+	int i, j, k,f=0;
+        for (i = 0; i < r; i++) {
+            for (j = 0; j < r; j++) {
+                result.m[i][j] = 0;
+                for (k = 0; k < r; k++)
+                    result.m[i][j] += mat.m[i][k]
+                                 * mat.m[k][j];
+            }
+        }
+	for (i = 0; i < r; i++) {
+            for (j = 0; j < r;) {
+		    if(result.m[i][j] == mat.m[i][j])
+			    j++;
+		    else{
+			    f = 1;
+			    break;
+		    }
+	    }
+	}
+	if(f==0)
+		return 1;  //indicates that the matrix is idempotent
+	else
+		return 0;  //indicates that the matrix is not idempotent
+}
+
+int Matrix::isInvolutory(){
+	Matrix mat(r,c);
+	Matrix result(r,c);
+	int i, j, k,f=0;
+        for (i = 0; i < r; i++) {
+            for (j = 0; j < r; j++) {
+                result.m[i][j] = 0;
+                for (k = 0; k < r; k++)
+                    result.m[i][j] += mat.m[i][k]
+                                 * mat.m[k][j];
+            }
+        }
+	for (i = 0; i < r; i++) {
+            for (j = 0; j < r;j++) {
+		    if(i == j){
+			    if(result.m[i][j] == 1)
+				    continue;
+			    else{
+				    f=1;
+				    break;
+			    }
+		    }
+		    elseif(result.m[i][j]==0)
+		            continue;
+	            else{
+			    f = 1;
+			    break;
+		    }
+	    }
+	}
+	if(f==0)
+		return 1;  //indicates that the matrix is involutory
+	else
+		return 0;  //indicates that the matrix is not involutory
+}
+
+
+Matrix Matrix::additiveInv() {
+    Matrix m1(c,r);
+    Matrix out(c,r);
+    for(int i=0;i<m1.r;i++)
+    {
+        for(int j=0;j<m1.c;j++)
+        {
+            out.m[i][j] = (-1)*m1.m[i][j];
+        }
+    }
+    return out;
+}
+
 int Matrix::isInvertible()
 {
     Matrix m2(r,c);
@@ -242,11 +320,9 @@ int Matrix::isInvertible()
 }
 
 
-
 int main()
 {
 	Matrix m(4,4);
-
 	cout<<"\n";
 	m.printMatrix();
 	cout<<"\n";
@@ -271,8 +347,6 @@ int main()
 
 	Matrix out1=m.columnSpace();
 	out1.printMatrix();
-
-
 
 	return 0;
 }
