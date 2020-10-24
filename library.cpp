@@ -1,5 +1,5 @@
 #include <iostream>
-
+#include<math.h>
 using namespace std;
 
 class Matrix
@@ -25,6 +25,7 @@ class Matrix
 		int trace(); //Find the trace of a given matrix
 		int *dimensions(); //Find the dimensions of a matrix
 		int *gaussElimination();
+		double determinant(int , float [10][10]);
 		Matrix columnSpace();
 		Matrix transpose();
 		Matrix nullSpace();
@@ -138,6 +139,15 @@ int Matrix::isSquare() {
         return 0;
 }
 
+int *Matrix::dimensions() {
+    Matrix m1(r,c);
+    int arr[2];
+    arr[0]=r;
+    arr[1]=c;
+    return arr;
+
+}
+
 int *Matrix::gaussElimination()
 {
 	int x_arr[100];
@@ -182,9 +192,61 @@ Matrix Matrix::transpose()
 	return out;
 }
 
+double Matrix::determinant(int n,float mat[10][10])
+{
+    int k, subi, i, j, subj;
+    float d=0;
+    float submat[10][10];
+    if (n == 2)
+    {
+        return( (mat[0][0] * mat[1][1]) - (mat[1][0] * mat[0][1]));
+    }
+    else
+    {
+        for(k = 0; k < n; k++)
+        {
+            subi = 0;
+            for(i = 1; i < n; i++)
+            {
+                subj = 0;
+                for(j = 0; j < n; j++)
+                {
+                    if (j == k)
+                    {
+                        continue;
+                    }
+                    submat[subi][subj] = mat[i][j];
+                    subj++;
+                }
+                subi++;
+            }
+        d = d + (pow(-1 ,c) * mat[0][c] * determinant(r - 1 ,submat));
+        }
+    }
+    return d;
+}
+
+int Matrix::isInvertible()
+{
+    Matrix m2(r,c);
+    float m3[10][10];
+    m3[10][10]= m2.m[10][10];
+    float d1=determinant(r,m3);
+    if(isSquare() == 1)
+    {
+        if(d1 != 0)
+            return 1;
+    }
+    else
+        return 0;
+}
+
+
+
 int main()
 {
 	Matrix m(4,4);
+
 	cout<<"\n";
 	m.printMatrix();
 	cout<<"\n";
@@ -209,6 +271,8 @@ int main()
 
 	Matrix out1=m.columnSpace();
 	out1.printMatrix();
+
+
 
 	return 0;
 }
