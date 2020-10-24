@@ -304,22 +304,25 @@ Matrix Matrix::additiveInv() {
     return out;
 }
 
-int Matrix::isInvertible()
-{
-    Matrix m2(r,c);
-    float m3[10][10];
-    m3[10][10]= m2.m[10][10];
-    float d1=determinant(r,m3);
-    if(isSquare() == 1)
-    {
-        if(d1 != 0)
-            return 1;
-    }
-    else
-        return 0;
-}
+#<<<<<<< main
+#int Matrix::isInvertible()
+#{
+#    Matrix m2(r,c);
+#    float m3[10][10];
+#    m3[10][10]= m2.m[10][10];
+#    float d1=determinant(r,m3);
+#    if(isSquare() == 1)
+#    {
+#        if(d1 != 0)
+#            return 1;
+#    }
+#    else
+#        return 0;
+#}
 
 
+#=======
+#>>>>>>> main
 int main()
 {
 	Matrix m(4,4);
