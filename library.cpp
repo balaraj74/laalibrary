@@ -120,6 +120,14 @@ int Matrix::trace() {
     return sum;
 }
 
+int Matrix::isSquare() {
+    Matrix m1(r,c);
+    if(r==c)
+        return 1;
+    else
+        return 0;
+}
+
 int *Matrix::gaussElimination()
 {
 	int x_arr[100];
