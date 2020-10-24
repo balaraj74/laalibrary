@@ -254,6 +254,42 @@ int Matrix::isIdempotent(){
 		return 0;  //indicates that the matrix is not idempotent
 }
 
+int Matrix::isInvolutory(){
+	Matrix mat(r,c);
+	Matrix result(r,c);
+	int i, j, k,f=0;
+        for (i = 0; i < r; i++) {
+            for (j = 0; j < r; j++) {
+                result.m[i][j] = 0;
+                for (k = 0; k < r; k++)
+                    result.m[i][j] += mat.m[i][k]
+                                 * mat.m[k][j];
+            }
+        }
+	for (i = 0; i < r; i++) {
+            for (j = 0; j < r;j++) {
+		    if(i == j){
+			    if(result.m[i][j] == 1)
+				    continue;
+			    else{
+				    f=1;
+				    break;
+			    }
+		    }
+		    elseif(result.m[i][j]==0)
+		            continue;
+	            else{
+			    f = 1;
+			    break;
+		    }
+	    }
+	}
+	if(f==0)
+		return 1;  //indicates that the matrix is involutory
+	else
+		return 0;  //indicates that the matrix is not involutory
+}
+
 
 Matrix Matrix::additiveInv() {
     Matrix m1(c,r);
