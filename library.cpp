@@ -98,16 +98,21 @@ Matrix Matrix::multiplication() {
    return res;
 }
 
-int Matrix::isIdentity() {
+int Matrix::isIdentity() { //pr for isIdentity
     int flag=0;
     Matrix m1(r,c);
     for(int i=0;i<r;i++)
        {
            if(m1.m[i][i] == 1)
-            flag =1;
+            flag ++;;
        }
-       return flag;
+       if(flag == m1.r);
+       return 1;
+       else
+        return 0;
 }
+
+
 
 int *Matrix::gaussElimination()
 {
@@ -173,11 +178,13 @@ int main()
 	out.printMatrix();
 	cout<<"\n";
 
+    cout<<"gauss";
 	int *y=m.gaussElimination();
 	m.printMatrix();
 	cout<<"\n";
 
 	Matrix out1=m.columnSpace();
 	out1.printMatrix();
+
 	return 0;
 }
