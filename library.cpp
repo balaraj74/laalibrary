@@ -82,6 +82,22 @@ Matrix Matrix::subtraction() { //PR for subtraction
    return res;
 }
 
+Matrix Matrix::multiplication() {
+    Matrix m1(r,c);
+    Matrix m2(r,c);
+    Matrix res(r,c);
+    int i, j, k;
+        for (i = 0; i < r; i++) {
+            for (j = 0; j < r; j++) {
+                res.m[i][j] = 0;
+                for (k = 0; k < r; k++)
+                    res.m[i][j] += m1.m[i][k]
+                                 * m2.m[k][j];
+            }
+        }
+   return res;
+}
+
 int *Matrix::gaussElimination()
 {
 	int x_arr[100];
