@@ -35,6 +35,16 @@ class Matrix
 		Matrix *LUdecomposition();
 		Matrix *LDUdecomposition();
 		Matrix *SVD(); //Single-value decomposition
+		int determinant(); //Finds the determinant of the given matrix
+		Matrix adjoint(); //Finds the adjoint of the given matrix
+		int isInvertible(); //Returns 1 if the matrix is invertible else returns 0
+		Matrix scalarMul(); //Multiplies the matrix by a scalar value
+		int isIdempotent(); //Returns 1 if the matrix is idempotent else returns 0
+		int isInvolutory(); //Returns 1 if the matrix is involutory else returns 0
+		int isNilpotent(); //Returns 1 if the matrix is nilpotent else returns 0
+		Matrix symmskew(); //expresses the matrix as a sum of a symmetric and skew symmetric matrix
+		int duplicate(); //returns the number of duplicate numbers in the matrix
+		Matrix additiveInv(); //finds the additive inverse of the matrix
 };
 
 Matrix::Matrix(int row,int column)
