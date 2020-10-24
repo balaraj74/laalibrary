@@ -98,7 +98,7 @@ Matrix Matrix::multiplication() {
    return res;
 }
 
-int Matrix::isIdentity() {
+int Matrix::isIdentity() { //pr for isIdentity
     int flag=0;
     Matrix m1(r,c);
     for(int i=0;i<r;i++)
