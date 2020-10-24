@@ -98,6 +98,17 @@ Matrix Matrix::multiplication() {
    return res;
 }
 
+int Matrix::isIdentity() {
+    int flag=0;
+    Matrix m1(r,c);
+    for(int i=0;i<r;i++)
+       {
+           if(m1.m[i][i] == 1)
+            flag =1;
+       }
+       return flag;
+}
+
 int *Matrix::gaussElimination()
 {
 	int x_arr[100];
@@ -156,6 +167,7 @@ int main()
     resu = m.subtraction();
     resu.printMatrix();
     cout<<"\n";
+
 
 	Matrix out=m.transpose();
 	out.printMatrix();
