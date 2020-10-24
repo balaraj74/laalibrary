@@ -226,6 +226,41 @@ double Matrix::determinant(int n,double mat[10][10])
     return d;
 }
 
+Matrix *Matrix::LUdecomposition(){
+	 Matrix upper(r,c);
+         Matrix lower(r,c);
+	 Matrix mat(r,c);
+    // Decomposing matrix into Upper and Lower triangular matrix 
+    for (int i = 0; i < r; i++) { 
+        
+	// Upper Triangular 
+        for (int k = i; k < c; k++) { 
+            //summation of lower[i][j]*upper[j][k]
+            int sum = 0; 
+            for (int j = 0; j < i; j++) 
+                sum += (lower[i][j] * upper[j][k]); 
+            upper[i][k] = mat[i][k] - sum; 
+        } 
+  
+        // Lower Triangular 
+        for (int k = i; k < c; k++) { 
+            if (i == k) 
+                lower[i][i] = 1;   // Diagonal as 1 
+            else {
+		//summation of lower[k][j]*upper[j][i]
+                int sum = 0; 
+                for (int j = 0; j < i; j++) 
+                    sum += (lower[k][j] * upper[j][i]); 
+		// Evaluating lower matrix
+                lower[k][i] = (mat[k][i] - sum) / upper[i][i]; 
+            } 
+        } 
+    }
+	upper.printMatrix();
+	return lower;
+}
+
+
 int Matrix::isIdempotent(){
 	Matrix mat(r,c);
 	Matrix result(r,c);
