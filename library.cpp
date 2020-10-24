@@ -226,6 +226,19 @@ double Matrix::determinant(int n,double mat[10][10])
     return d;
 }
 
+Matrix Matrix::additiveInv() {
+    Matrix m1(c,r);
+    Matrix out(c,r);
+    for(int i=0;i<m1.r;i++)
+    {
+        for(int j=0;j<m1.c;j++)
+        {
+            out.m[i][j] = (-1)*m1.m[i][j];
+        }
+    }
+    return out;
+}
+
 int main()
 {
 	Matrix m(4,4);
