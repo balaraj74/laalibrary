@@ -33,6 +33,7 @@ class Matrix
 		double determinant(int , double [10][10]);
 		Matrix columnSpace();
 		Matrix transpose();
+		Matrix SilentTranspose();
 		Matrix nullSpace();
 		Matrix inverse();
 		int *eigenValues();
@@ -48,10 +49,92 @@ class Matrix
 		int isIdempotent(); //Returns 1 if the matrix is idempotent else returns 0
 		int isInvolutory(); //Returns 1 if the matrix is involutory else returns 0
 		int isNilpotent(); //Returns 1 if the matrix is nilpotent else returns 0
-		Matrix symmskew(); //expresses the matrix as a sum of a symmetric and skew symmetric matrix
 		int duplicate(); //returns the number of duplicate numbers in the matrix
 		Matrix additiveInv(); //finds the additive inverse of the matrix
 
+		// since this function computes two matrices, we return a pointer to a matrix array
+		// TODO check memory safety of this
+		Matrix* symmskew(); //expresses the matrix as a sum of a symmetric and skew symmetric matrix
+
+		// operator overloading for addition and subtraction of like matrices
+		Matrix operator + (const Matrix& other) 
+		{
+			if (r == other.r && c == other.c)
+			{
+				// we can perform operations on them
+				Matrix result(r, c, false);
+
+				for (int i = 0; i < r; i++)
+				{
+					for (int j = 0; j < c; j++)
+					{
+						result.m[i][j] = m[i][j] + other.m[i][j];
+					}
+				}
+				cout << "Added Matrices successfully." << endl;
+				return result;
+			}
+			else
+			{
+				cout << "Cannot add two unlike matrices" << endl;
+				return Matrix(1,1, false);
+			}
+		};
+
+		Matrix operator - (const Matrix& other) 
+		{
+			if (r == other.r && c == other.c)
+			{
+				Matrix result(r, c, false);
+
+				for (int i = 0; i < r; i++)
+				{
+					for (int j = 0; j < c; j++)
+					{
+						result.m[i][j] = m[i][j] - other.m[i][j];
+					}
+				}
+				cout << "Subtracted Matrices successfully." << endl;
+				return result;
+			}
+			else
+			{
+				cout << "Cannot subtract two unlike matrices" << endl;
+				return Matrix(1,1, false);
+			}
+		};
+
+		// overload scalar multiplication
+		Matrix operator * (const int& scalar)
+		{
+			Matrix result(r, c, false);
+
+			for (int i = 0; i < r; i++)
+			{
+				for (int j = 0; j < c; j++)
+				{
+					result.m[i][j] = m[i][j] * scalar;
+				}
+			}
+			cout << "Successfully multiplied scalar" << endl;
+			return result;
+		};
+
+		// overload scalar division
+		Matrix operator / (const int& scalar)
+		{
+			Matrix result(r, c, false);
+
+			for (int i = 0; i < r; i++)
+			{
+				for (int j = 0; j < c; j++)
+				{
+					result.m[i][j] = m[i][j] / scalar;
+				}
+			}
+			cout << "Subtracted Matrices successfully." << endl;
+			return result;
+		};
 };
 
 Matrix::Matrix(int row, int column, bool fill)
@@ -211,6 +294,15 @@ Matrix Matrix::transpose()
 	return out;
 }
 
+Matrix Matrix::SilentTranspose()
+{
+	Matrix out(c, r, false);
+	for(int i=0;i<r;i++)
+		for(int j=0;j<c;j++)
+			out.m[j][i]=m[i][j];
+	return out;
+}
+
 double Matrix::determinant(int n,double mat[10][10])
 {
     int k, subi, i, j, subj;
@@ -357,6 +449,39 @@ Matrix Matrix::additiveInv() {
         }
     }
     return out;
+}
+
+Matrix* Matrix::symmskew()
+{
+	if (r == c)
+	{
+		// get copies of both matrices needed
+		Matrix transpose = SilentTranspose();
+		Matrix current = (*this);
+
+		// make empty placeholder matrices
+		Matrix symmetric(r, c, false);
+		Matrix skew_symmetric(r, c, false);
+
+		// perform operations
+		symmetric = (current + transpose)/2;
+		skew_symmetric = (current - transpose)/2;
+
+		// initialize pointer to array of matrices
+		Matrix* result_pointer = NULL;
+
+		// assign positions
+		result_pointer[0] = symmetric;
+		result_pointer[1] = skew_symmetric;
+
+		// return
+		return result_pointer;
+	}
+	else
+	{
+		cout << "Matrix must be square \n";
+		return NULL;
+	}
 }
 
 /*
