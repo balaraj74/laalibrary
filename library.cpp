@@ -257,7 +257,8 @@ Matrix *Matrix::LUdecomposition(){
         } 
     }
 	upper.printMatrix();
-	return lower;
+	lower.printMatrix();
+	return 0;
 }
 
 
