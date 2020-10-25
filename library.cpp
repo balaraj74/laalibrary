@@ -330,7 +330,7 @@ double Matrix::determinant(int n,float mat[100][100])
     return D;
 }
 
-/*Matrix *Matrix::LUdecomposition(){
+Matrix *Matrix::LUdecomposition(){
 	 Matrix upper(r,c);
          Matrix lower(r,c);
 	 Matrix mat(r,c);
@@ -342,28 +342,28 @@ double Matrix::determinant(int n,float mat[100][100])
             //summation of lower[i][j]*upper[j][k]
             int sum = 0;
             for (int j = 0; j < i; j++)
-                sum += (lower[i][j] * upper[j][k]);
-            upper[i][k] = mat[i][k] - sum;
+                sum += (lower.m[i][j] * upper.m[j][k]);
+            upper.m[i][k] = mat.m[i][k] - sum;
         }
 
         // Lower Triangular
         for (int k = i; k < c; k++) {
             if (i == k)
-                lower[i][i] = 1;   // Diagonal as 1
+                lower.m[i][i] = 1;   // Diagonal as 1
             else {
 		//summation of lower[k][j]*upper[j][i]
                 int sum = 0;
                 for (int j = 0; j < i; j++)
-                    sum += (lower[k][j] * upper[j][i]);
+                    sum += (lower.m[k][j] * upper.m[j][i]);
 		// Evaluating lower matrix
-                lower[k][i] = (mat[k][i] - sum) / upper[i][i];
+                lower.m[k][i] = (mat.m[k][i] - sum) / upper.m[i][i];
             }
         }
     }
 	upper.printMatrix();
 	lower.printMatrix();
 	return 0;
-}*/
+}
 
 
 int Matrix::isIdempotent(){
