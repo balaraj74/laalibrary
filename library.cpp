@@ -155,7 +155,7 @@ int *Matrix::gaussElimination()
 	for(int i=0;i<c;i++)
 		for(int j=i+1;j<r;j++)
 		{
-			int x=m[j][i]/m[i][i];
+			float x=m[j][i]/m[i][i];
 			*ptr=x;
 			ptr++;
 			for(int k=0;k<c;k++)
