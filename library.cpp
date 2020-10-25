@@ -11,7 +11,12 @@ class Matrix
 		float m[100][100]; //matrix
 
 		//Constructor
-		Matrix(int row,int column);
+		Matrix(int row, int column, bool fill=true);
+		/*
+		 * boolean flag fill defaults to true to prevent this change from
+		 * being a breaking change. If you do not want to be asked to input a
+		 * value for every single element in the matrix, set fill to false.
+		 */
 
 		//Utility functions
 		void printMatrix();
@@ -46,19 +51,33 @@ class Matrix
 		Matrix symmskew(); //expresses the matrix as a sum of a symmetric and skew symmetric matrix
 		int duplicate(); //returns the number of duplicate numbers in the matrix
 		Matrix additiveInv(); //finds the additive inverse of the matrix
+
 };
 
-Matrix::Matrix(int row,int column)
+Matrix::Matrix(int row, int column, bool fill)
 {
 	r=row;
 	c=column;
-	for(int i=0;i<row;i++)
-		for(int j=0;j<column;j++)
+	if (fill == true)
+	{
+		for(int i=0;i<row;i++)
+			for(int j=0;j<column;j++)
+			{
+				float x;
+				cin>>x;
+				m[i][j]=x/1.0;
+			}
+	}
+	else
+	{
+		for(int i=0;i<row;i++)
 		{
-			float x;
-			cin>>x;
-			m[i][j]=x/1.0;
+			for(int j=0;j<column;j++)
+			{
+				m[i][j]=0;
+			}
 		}
+	}
 }
 
 void Matrix::printMatrix()
@@ -340,25 +359,25 @@ Matrix Matrix::additiveInv() {
     return out;
 }
 
-#<<<<<<< main
-#int Matrix::isInvertible()
-#{
-#    Matrix m2(r,c);
-#    float m3[10][10];
-#    m3[10][10]= m2.m[10][10];
-#    float d1=determinant(r,m3);
-#    if(isSquare() == 1)
-#    {
-#        if(d1 != 0)
-#            return 1;
-#    }
-#    else
-#        return 0;
-#}
+/*
+int Matrix::isInvertible()
+{
+    Matrix m2(r,c);
+    float m3[10][10];
+    m3[10][10]= m2.m[10][10];
+    float d1=determinant(r,m3);
+    if(isSquare() == 1)
+    {
+        if(d1 != 0)
+            return 1;
+    }
+    else
+        return 0;
+}
+*/
 
 
-#=======
-#>>>>>>> main
+// driver code
 int main()
 {
 	Matrix m(4,4);
