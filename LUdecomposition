@@ -1,0 +1,3 @@
+This function decomposes the given matrix into lower triangular and upper triangular matrices.
+For example -   Suppose we are given the matrix M
+So, this function decomposes the matrix M into upper triangular matrix U and lower triangular matrix L such that M = [L][U]
