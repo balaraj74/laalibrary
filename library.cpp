@@ -51,13 +51,14 @@ class Matrix
 		int isNilpotent(); //Returns 1 if the matrix is nilpotent else returns 0
 		int duplicate(); //returns the number of duplicate numbers in the matrix
 		Matrix additiveInv(); //finds the additive inverse of the matrix
+		Matrix cofactor(int [10][10],int ,int ,int );
 
 		// since this function computes two matrices, we return a pointer to a matrix array
 		// TODO check memory safety of this
 		Matrix* symmskew(); //expresses the matrix as a sum of a symmetric and skew symmetric matrix
 
 		// operator overloading for addition and subtraction of like matrices
-		Matrix operator + (const Matrix& other) 
+		Matrix operator + (const Matrix& other)
 		{
 			if (r == other.r && c == other.c)
 			{
@@ -81,7 +82,7 @@ class Matrix
 			}
 		};
 
-		Matrix operator - (const Matrix& other) 
+		Matrix operator - (const Matrix& other)
 		{
 			if (r == other.r && c == other.c)
 			{
@@ -337,40 +338,40 @@ double Matrix::determinant(int n,double mat[10][10])
     return d;
 }
 
-Matrix *Matrix::LUdecomposition(){
+/*Matrix *Matrix::LUdecomposition(){
 	 Matrix upper(r,c);
          Matrix lower(r,c);
 	 Matrix mat(r,c);
-    // Decomposing matrix into Upper and Lower triangular matrix 
-    for (int i = 0; i < r; i++) { 
-        
-	// Upper Triangular 
-        for (int k = i; k < c; k++) { 
+    // Decomposing matrix into Upper and Lower triangular matrix
+    for (int i = 0; i < r; i++) {
+
+	// Upper Triangular
+        for (int k = i; k < c; k++) {
             //summation of lower[i][j]*upper[j][k]
-            int sum = 0; 
-            for (int j = 0; j < i; j++) 
-                sum += (lower[i][j] * upper[j][k]); 
-            upper[i][k] = mat[i][k] - sum; 
-        } 
-  
-        // Lower Triangular 
-        for (int k = i; k < c; k++) { 
-            if (i == k) 
-                lower[i][i] = 1;   // Diagonal as 1 
+            int sum = 0;
+            for (int j = 0; j < i; j++)
+                sum += (lower[i][j] * upper[j][k]);
+            upper[i][k] = mat[i][k] - sum;
+        }
+
+        // Lower Triangular
+        for (int k = i; k < c; k++) {
+            if (i == k)
+                lower[i][i] = 1;   // Diagonal as 1
             else {
 		//summation of lower[k][j]*upper[j][i]
-                int sum = 0; 
-                for (int j = 0; j < i; j++) 
-                    sum += (lower[k][j] * upper[j][i]); 
+                int sum = 0;
+                for (int j = 0; j < i; j++)
+                    sum += (lower[k][j] * upper[j][i]);
 		// Evaluating lower matrix
-                lower[k][i] = (mat[k][i] - sum) / upper[i][i]; 
-            } 
-        } 
+                lower[k][i] = (mat[k][i] - sum) / upper[i][i];
+            }
+        }
     }
 	upper.printMatrix();
 	lower.printMatrix();
 	return 0;
-}
+}*/
 
 
 int Matrix::isIdempotent(){
@@ -482,6 +483,35 @@ Matrix* Matrix::symmskew()
 		cout << "Matrix must be square \n";
 		return NULL;
 	}
+}
+
+
+//takes in matrix , row no,column no, and size of matrix
+Matrix Matrix::cofactor(int a[10][10],int rw,int cl,int N)
+{
+    int i = 0, j = 0;
+    Matrix temp(c,r);
+
+    for (int row = 0; row < N; row++)
+    {
+        for (int col = 0; col < N; col++)
+        {
+            //  Copying into temporary matrix only those element
+            //  which are not in given row and column
+            if (row != rw && col != cl)
+            {
+                temp.m[i][j++] = a[row][col];
+
+
+                if (j == N - 1)
+                {
+                    j = 0;
+                    i++;
+                }
+            }
+        }
+    }
+    return temp;
 }
 
 /*
