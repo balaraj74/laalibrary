@@ -30,7 +30,7 @@ class Matrix
 		int trace(); //Find the trace of a given matrix
 		int *dimensions(); //Find the dimensions of a matrix
 		int *gaussElimination();
-		double determinant(int , double [10][10]);
+		double determinant(int , float [100][100]);
 		Matrix columnSpace();
 		Matrix transpose();
 		Matrix SilentTranspose();
@@ -51,13 +51,14 @@ class Matrix
 		int isNilpotent(); //Returns 1 if the matrix is nilpotent else returns 0
 		int duplicate(); //returns the number of duplicate numbers in the matrix
 		Matrix additiveInv(); //finds the additive inverse of the matrix
+		Matrix cofactor(float [100][100],int ,int ,int );
 
 		// since this function computes two matrices, we return a pointer to a matrix array
 		// TODO check memory safety of this
 		Matrix* symmskew(); //expresses the matrix as a sum of a symmetric and skew symmetric matrix
 
 		// operator overloading for addition and subtraction of like matrices
-		Matrix operator + (const Matrix& other) 
+		Matrix operator + (const Matrix& other)
 		{
 			if (r == other.r && c == other.c)
 			{
@@ -81,7 +82,7 @@ class Matrix
 			}
 		};
 
-		Matrix operator - (const Matrix& other) 
+		Matrix operator - (const Matrix& other)
 		{
 			if (r == other.r && c == other.c)
 			{
@@ -303,74 +304,66 @@ Matrix Matrix::SilentTranspose()
 	return out;
 }
 
-double Matrix::determinant(int n,double mat[10][10])
+double Matrix::determinant(int n,float mat[100][100])
 {
-    int k, subi, i, j, subj;
-    double d=0;
-    double submat[10][10];
-    if (n == 2)
+    double D = 0;
+
+    //  Base case : if matrix contains single element
+    if (n == 1)
+        return mat[0][0];
+
+     Matrix temp(10,10); // To store cofactors
+
+    int sign = 1;  // To store sign multiplier
+
+
+    for (int f = 0; f < n; f++)
     {
-        return( (mat[0][0] * mat[1][1]) - (mat[1][0] * mat[0][1]));
+        // Getting Cofactor of A[0][f]
+        temp = cofactor(mat, 0, f, n);
+        D = D + sign * mat[0][f] * determinant(n-1,temp.m);
+
+        // terms are to be added with alternate sign
+        sign = -sign;
     }
-    else
-    {
-        for(k = 0; k < n; k++)
-        {
-            subi = 0;
-            for(i = 1; i < n; i++)
-            {
-                subj = 0;
-                for(j = 0; j < n; j++)
-                {
-                    if (j == k)
-                    {
-                        continue;
-                    }
-                    submat[subi][subj] = mat[i][j];
-                    subj++;
-                }
-                subi++;
-            }
-        d = d + (pow(-1 ,c) * mat[0][c] * determinant(r - 1 ,submat));
-        }
-    }
-    return d;
+
+    return D;
 }
 
-Matrix *Matrix::LUdecomposition(){
+/*Matrix *Matrix::LUdecomposition(){
 	 Matrix upper(r,c);
          Matrix lower(r,c);
 	 Matrix mat(r,c);
-    // Decomposing matrix into Upper and Lower triangular matrix 
-    for (int i = 0; i < r; i++) { 
-        
-	// Upper Triangular 
-        for (int k = i; k < c; k++) { 
+    // Decomposing matrix into Upper and Lower triangular matrix
+    for (int i = 0; i < r; i++) {
+
+	// Upper Triangular
+        for (int k = i; k < c; k++) {
             //summation of lower[i][j]*upper[j][k]
-            int sum = 0; 
-            for (int j = 0; j < i; j++) 
-                sum += (lower[i][j] * upper[j][k]); 
-            upper[i][k] = mat[i][k] - sum; 
-        } 
-  
-        // Lower Triangular 
-        for (int k = i; k < c; k++) { 
-            if (i == k) 
-                lower[i][i] = 1;   // Diagonal as 1 
+            int sum = 0;
+            for (int j = 0; j < i; j++)
+                sum += (lower[i][j] * upper[j][k]);
+            upper[i][k] = mat[i][k] - sum;
+        }
+
+        // Lower Triangular
+        for (int k = i; k < c; k++) {
+            if (i == k)
+                lower[i][i] = 1;   // Diagonal as 1
             else {
 		//summation of lower[k][j]*upper[j][i]
-                int sum = 0; 
-                for (int j = 0; j < i; j++) 
-                    sum += (lower[k][j] * upper[j][i]); 
+                int sum = 0;
+                for (int j = 0; j < i; j++)
+                    sum += (lower[k][j] * upper[j][i]);
 		// Evaluating lower matrix
-                lower[k][i] = (mat[k][i] - sum) / upper[i][i]; 
-            } 
-        } 
+                lower[k][i] = (mat[k][i] - sum) / upper[i][i];
+            }
+        }
     }
 	upper.printMatrix();
 	lower.printMatrix();
 	return 0;
-}
+}*/
 
 
 int Matrix::isIdempotent(){
@@ -482,6 +475,35 @@ Matrix* Matrix::symmskew()
 		cout << "Matrix must be square \n";
 		return NULL;
 	}
+}
+
+
+//takes in matrix , row no,column no, and size of matrix
+Matrix Matrix::cofactor(float a[100][100],int rw,int cl,int N)
+{
+    int i = 0, j = 0;
+    Matrix temp(c,r);
+
+    for (int row = 0; row < N; row++)
+    {
+        for (int col = 0; col < N; col++)
+        {
+            //  Copying into temporary matrix only those element
+            //  which are not in given row and column
+            if (row != rw && col != cl)
+            {
+                temp.m[i][j++] = a[row][col];
+
+
+                if (j == N - 1)
+                {
+                    j = 0;
+                    i++;
+                }
+            }
+        }
+    }
+    return temp;
 }
 
 /*
