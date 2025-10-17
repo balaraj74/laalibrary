@@ -365,6 +365,165 @@ Matrix *Matrix::LUdecomposition(){
 	return 0;
 }
 
+Matrix *Matrix::SVD(){
+	if(!isSquare()){
+		cout<<"SVD requires square matrix for this implementation"<<endl;
+		return 0;
+	}
+	
+	Matrix *result = new Matrix[3]{Matrix(r,c,false), Matrix(r,c,false), Matrix(r,c,false)};
+	Matrix &U = result[0];
+	Matrix &S = result[1];
+	Matrix &V = result[2];
+	
+	Matrix AtA(r,c,false);
+	
+	for(int i=0; i<r; i++){
+		for(int j=0; j<c; j++){
+			AtA.m[i][j] = 0;
+			for(int k=0; k<r; k++){
+				AtA.m[i][j] += m[k][i] * m[k][j];
+			}
+		}
+	}
+	
+	for(int i=0; i<r; i++){
+		for(int j=0; j<c; j++){
+			V.m[i][j] = (i==j) ? 1.0 : 0.0;
+		}
+	}
+	
+	int maxIter = 100;
+	float tolerance = 1e-10;
+	
+	for(int iter=0; iter<maxIter; iter++){
+		float maxVal = 0;
+		int p=0, q=1;
+		
+		for(int i=0; i<r; i++){
+			for(int j=i+1; j<c; j++){
+				if(fabs(AtA.m[i][j]) > maxVal){
+					maxVal = fabs(AtA.m[i][j]);
+					p = i;
+					q = j;
+				}
+			}
+		}
+		
+		if(maxVal < tolerance) break;
+		
+		float theta;
+		if(fabs(AtA.m[p][p] - AtA.m[q][q]) < tolerance){
+			theta = M_PI / 4.0;
+		} else {
+			theta = 0.5 * atan(2.0 * AtA.m[p][q] / (AtA.m[p][p] - AtA.m[q][q]));
+		}
+		
+		float c_val = cos(theta);
+		float s_val = sin(theta);
+		
+		float temp[100][100];
+		for(int i=0; i<r; i++){
+			for(int j=0; j<c; j++){
+				temp[i][j] = AtA.m[i][j];
+			}
+		}
+		
+		for(int i=0; i<r; i++){
+			if(i != p && i != q){
+				AtA.m[p][i] = c_val * temp[p][i] + s_val * temp[q][i];
+				AtA.m[i][p] = AtA.m[p][i];
+				AtA.m[q][i] = -s_val * temp[p][i] + c_val * temp[q][i];
+				AtA.m[i][q] = AtA.m[q][i];
+			}
+		}
+		
+		AtA.m[p][p] = c_val * c_val * temp[p][p] + 2.0 * c_val * s_val * temp[p][q] + s_val * s_val * temp[q][q];
+		AtA.m[q][q] = s_val * s_val * temp[p][p] - 2.0 * c_val * s_val * temp[p][q] + c_val * c_val * temp[q][q];
+		AtA.m[p][q] = 0;
+		AtA.m[q][p] = 0;
+		
+		float tempV[100][100];
+		for(int i=0; i<r; i++){
+			for(int j=0; j<c; j++){
+				tempV[i][j] = V.m[i][j];
+			}
+		}
+		
+		for(int i=0; i<r; i++){
+			V.m[i][p] = c_val * tempV[i][p] + s_val * tempV[i][q];
+			V.m[i][q] = -s_val * tempV[i][p] + c_val * tempV[i][q];
+		}
+	}
+	
+	float eigenvalues[100];
+	for(int i=0; i<r; i++){
+		eigenvalues[i] = AtA.m[i][i];
+	}
+	
+	for(int i=0; i<r-1; i++){
+		for(int j=i+1; j<r; j++){
+			if(eigenvalues[i] < eigenvalues[j]){
+				float temp = eigenvalues[i];
+				eigenvalues[i] = eigenvalues[j];
+				eigenvalues[j] = temp;
+				
+				for(int k=0; k<r; k++){
+					float t = V.m[k][i];
+					V.m[k][i] = V.m[k][j];
+					V.m[k][j] = t;
+				}
+			}
+		}
+	}
+	
+	for(int i=0; i<r; i++){
+		for(int j=0; j<c; j++){
+			S.m[i][j] = 0;
+		}
+		S.m[i][i] = sqrt(fabs(eigenvalues[i]));
+	}
+	
+	for(int i=0; i<r; i++){
+		float sigma = S.m[i][i];
+		if(sigma > tolerance){
+			for(int j=0; j<r; j++){
+				U.m[j][i] = 0;
+				for(int k=0; k<c; k++){
+					U.m[j][i] += m[j][k] * V.m[k][i];
+				}
+				U.m[j][i] /= sigma;
+			}
+		} else {
+			for(int j=0; j<r; j++){
+				U.m[j][i] = 0;
+			}
+			U.m[i][i] = 1;
+		}
+	}
+	
+	cout<<"U Matrix:"<<endl;
+	U.printMatrix();
+	cout<<endl;
+	
+	cout<<"Sigma Matrix:"<<endl;
+	S.printMatrix();
+	cout<<endl;
+	
+	cout<<"V Transpose Matrix:"<<endl;
+	Matrix Vt(r,c,false);
+	for(int i=0; i<r; i++){
+		for(int j=0; j<c; j++){
+			Vt.m[i][j] = V.m[j][i];
+		}
+	}
+	Vt.printMatrix();
+	cout<<endl;
+	
+	return result;
+}
+
+
 
 int Matrix::isIdempotent(){
 	Matrix mat(r,c);
@@ -527,31 +686,15 @@ int Matrix::isInvertible()
 // driver code
 int main()
 {
-	Matrix m(4,4);
-	cout<<"\n";
+	cout<<"Enter a 3x3 matrix for SVD:"<<endl;
+	Matrix m(3,3);
+	cout<<"\nOriginal Matrix:"<<endl;
 	m.printMatrix();
 	cout<<"\n";
 
-    Matrix resu = m.addition();
-    resu.printMatrix();
-    cout<<"\n";
-
-    resu = m.subtraction();
-    resu.printMatrix();
-    cout<<"\n";
-
-
-	Matrix out=m.transpose();
-	out.printMatrix();
-	cout<<"\n";
-
-    cout<<"gauss";
-	int *y=m.gaussElimination();
-	m.printMatrix();
-	cout<<"\n";
-
-	Matrix out1=m.columnSpace();
-	out1.printMatrix();
-
+	cout<<"Performing SVD..."<<endl;
+	Matrix *svd_result = m.SVD();
+	
 	return 0;
 }
+
