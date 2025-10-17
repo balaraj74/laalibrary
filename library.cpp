@@ -366,19 +366,17 @@ Matrix *Matrix::LUdecomposition(){
 }
 
 Matrix *Matrix::SVD(){
-	if(!isSquare()){
-		cout<<"SVD requires square matrix for this implementation"<<endl;
-		return 0;
-	}
+	int minDim = (r < c) ? r : c;
+	int maxDim = (r > c) ? r : c;
 	
-	Matrix *result = new Matrix[3]{Matrix(r,c,false), Matrix(r,c,false), Matrix(r,c,false)};
+	Matrix *result = new Matrix[3]{Matrix(r, minDim, false), Matrix(minDim, c, false), Matrix(c, c, false)};
 	Matrix &U = result[0];
 	Matrix &S = result[1];
 	Matrix &V = result[2];
 	
-	Matrix AtA(r,c,false);
+	Matrix AtA(c, c, false);
 	
-	for(int i=0; i<r; i++){
+	for(int i=0; i<c; i++){
 		for(int j=0; j<c; j++){
 			AtA.m[i][j] = 0;
 			for(int k=0; k<r; k++){
@@ -387,7 +385,7 @@ Matrix *Matrix::SVD(){
 		}
 	}
 	
-	for(int i=0; i<r; i++){
+	for(int i=0; i<c; i++){
 		for(int j=0; j<c; j++){
 			V.m[i][j] = (i==j) ? 1.0 : 0.0;
 		}
@@ -400,7 +398,7 @@ Matrix *Matrix::SVD(){
 		float maxVal = 0;
 		int p=0, q=1;
 		
-		for(int i=0; i<r; i++){
+		for(int i=0; i<c; i++){
 			for(int j=i+1; j<c; j++){
 				if(fabs(AtA.m[i][j]) > maxVal){
 					maxVal = fabs(AtA.m[i][j]);
@@ -423,13 +421,13 @@ Matrix *Matrix::SVD(){
 		float s_val = sin(theta);
 		
 		float temp[100][100];
-		for(int i=0; i<r; i++){
+		for(int i=0; i<c; i++){
 			for(int j=0; j<c; j++){
 				temp[i][j] = AtA.m[i][j];
 			}
 		}
 		
-		for(int i=0; i<r; i++){
+		for(int i=0; i<c; i++){
 			if(i != p && i != q){
 				AtA.m[p][i] = c_val * temp[p][i] + s_val * temp[q][i];
 				AtA.m[i][p] = AtA.m[p][i];
@@ -444,77 +442,84 @@ Matrix *Matrix::SVD(){
 		AtA.m[q][p] = 0;
 		
 		float tempV[100][100];
-		for(int i=0; i<r; i++){
+		for(int i=0; i<c; i++){
 			for(int j=0; j<c; j++){
 				tempV[i][j] = V.m[i][j];
 			}
 		}
 		
-		for(int i=0; i<r; i++){
+		for(int i=0; i<c; i++){
 			V.m[i][p] = c_val * tempV[i][p] + s_val * tempV[i][q];
 			V.m[i][q] = -s_val * tempV[i][p] + c_val * tempV[i][q];
 		}
 	}
 	
 	float eigenvalues[100];
-	for(int i=0; i<r; i++){
+	for(int i=0; i<c; i++){
 		eigenvalues[i] = AtA.m[i][i];
 	}
 	
-	for(int i=0; i<r-1; i++){
-		for(int j=i+1; j<r; j++){
-			if(eigenvalues[i] < eigenvalues[j]){
-				float temp = eigenvalues[i];
-				eigenvalues[i] = eigenvalues[j];
-				eigenvalues[j] = temp;
-				
-				for(int k=0; k<r; k++){
-					float t = V.m[k][i];
-					V.m[k][i] = V.m[k][j];
-					V.m[k][j] = t;
-				}
+	int indices[100];
+	for(int i=0; i<c; i++) indices[i] = i;
+	
+	for(int i=0; i<c-1; i++){
+		for(int j=i+1; j<c; j++){
+			if(eigenvalues[indices[i]] < eigenvalues[indices[j]]){
+				int temp = indices[i];
+				indices[i] = indices[j];
+				indices[j] = temp;
 			}
 		}
 	}
 	
-	for(int i=0; i<r; i++){
+	Matrix Vsorted(c, c, false);
+	float sortedEigenvalues[100];
+	for(int i=0; i<c; i++){
+		sortedEigenvalues[i] = eigenvalues[indices[i]];
+		for(int j=0; j<c; j++){
+			Vsorted.m[j][i] = V.m[j][indices[i]];
+		}
+	}
+	
+	for(int i=0; i<minDim; i++){
 		for(int j=0; j<c; j++){
 			S.m[i][j] = 0;
 		}
-		S.m[i][i] = sqrt(fabs(eigenvalues[i]));
+		if(i < c){
+			S.m[i][i] = sqrt(fabs(sortedEigenvalues[i]));
+		}
 	}
 	
-	for(int i=0; i<r; i++){
+	for(int i=0; i<minDim; i++){
 		float sigma = S.m[i][i];
 		if(sigma > tolerance){
 			for(int j=0; j<r; j++){
 				U.m[j][i] = 0;
 				for(int k=0; k<c; k++){
-					U.m[j][i] += m[j][k] * V.m[k][i];
+					U.m[j][i] += m[j][k] * Vsorted.m[k][i];
 				}
 				U.m[j][i] /= sigma;
 			}
 		} else {
 			for(int j=0; j<r; j++){
-				U.m[j][i] = 0;
+				U.m[j][i] = (i < r && j == i) ? 1.0 : 0.0;
 			}
-			U.m[i][i] = 1;
 		}
 	}
 	
-	cout<<"U Matrix:"<<endl;
+	cout<<"U Matrix ("<<r<<"x"<<minDim<<"):"<<endl;
 	U.printMatrix();
 	cout<<endl;
 	
-	cout<<"Sigma Matrix:"<<endl;
+	cout<<"Sigma Matrix ("<<minDim<<"x"<<c<<"):"<<endl;
 	S.printMatrix();
 	cout<<endl;
 	
-	cout<<"V Transpose Matrix:"<<endl;
-	Matrix Vt(r,c,false);
-	for(int i=0; i<r; i++){
+	cout<<"V Transpose Matrix ("<<c<<"x"<<c<<"):"<<endl;
+	Matrix Vt(c, c, false);
+	for(int i=0; i<c; i++){
 		for(int j=0; j<c; j++){
-			Vt.m[i][j] = V.m[j][i];
+			Vt.m[i][j] = Vsorted.m[j][i];
 		}
 	}
 	Vt.printMatrix();
@@ -686,8 +691,12 @@ int Matrix::isInvertible()
 // driver code
 int main()
 {
-	cout<<"Enter a 3x3 matrix for SVD:"<<endl;
-	Matrix m(3,3);
+	cout<<"Enter matrix dimensions (rows cols):"<<endl;
+	int rows, cols;
+	cin >> rows >> cols;
+	
+	cout<<"Enter matrix elements:"<<endl;
+	Matrix m(rows, cols);
 	cout<<"\nOriginal Matrix:"<<endl;
 	m.printMatrix();
 	cout<<"\n";
